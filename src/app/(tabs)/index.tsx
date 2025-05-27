@@ -22,8 +22,8 @@ export default function HomeScreen() {
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">Welcome!</ThemedText>
         </ThemedView>
-        <BotaoAdicionar />
       </ScrollView>
+      <BotaoAdicionar />
     </ContainerWrapper>
   );
 }

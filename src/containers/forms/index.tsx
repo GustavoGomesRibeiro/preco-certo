@@ -36,12 +36,15 @@ export const Forms = () => {
         control={control}
         placeholder="Quantidade em gramas"
         label="Quantidade do Produto (g)"
+        type="numeric"
       />
       <InputText
         fieldName="precoProduto"
         control={control}
         placeholder="Preço do Produto"
         label="Custo do Produto (R$)"
+        type="numeric"
+        formatarToBRL
       />
       <Button
         onPress={handleSubmit(onSubmit)}

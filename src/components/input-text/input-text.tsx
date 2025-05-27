@@ -1,3 +1,4 @@
+import { formatToBRL } from "@/src/shared/utils/format-currency";
 import {
   Control,
   Controller,
@@ -5,14 +6,21 @@ import {
   FieldValues,
   RegisterOptions,
 } from "react-hook-form";
-import { View } from "react-native";
+import {
+  KeyboardType,
+  KeyboardTypeAndroid,
+  KeyboardTypeIOS,
+  View,
+} from "react-native";
 import { Input, Label } from "tamagui";
 
 type InputTextProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > = {
+  formatarToBRL?: boolean;
   label?: string;
+  type?: KeyboardType | KeyboardTypeAndroid | KeyboardTypeIOS;
   fieldName: TName;
   control: Control<TFieldValues>;
   placeholder?: string;
@@ -30,6 +38,8 @@ export const InputText = <
   fieldName,
   control,
   label,
+  type,
+  formatarToBRL,
 }: InputTextProps<TFieldValues, TName>) => {
   return (
     <Controller
@@ -41,16 +51,26 @@ export const InputText = <
             {label}
           </Label>
           <Input
-            borderWidth={2}
-            borderColor="grey"
+            borderWidth={0}
+            borderColor="transparent"
+            backgroundColor="transparent"
             value={value}
-            onChangeText={onChange}
+            onChangeText={
+              formatarToBRL
+                ? (e) => onChange(formatToBRL(e))
+                : (e) => onChange(e)
+            }
             placeholder={placeholder}
             width={300}
             minWidth={300}
             flex={1}
             gap={8}
             marginBottom={10}
+            borderRadius={0}
+            paddingVertical={0}
+            paddingHorizontal={0}
+            style={{ borderBottomWidth: 1, borderBottomColor: "grey" }}
+            keyboardType={type}
           />
         </View>
       )}

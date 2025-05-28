@@ -1,6 +1,7 @@
 import { Colors } from "@/src/constants/Colors";
 import { useColorScheme } from "@/src/hooks/useColorScheme";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 type ContainerWrapperProps = {
   children: React.ReactNode;
@@ -23,7 +24,11 @@ export const ContainerWrapper: React.FC<ContainerWrapperProps> = ({
         },
       ]}
     >
-      {children}
+      <SafeAreaProvider>
+        <SafeAreaView>
+          <ScrollView>{children}</ScrollView>
+        </SafeAreaView>
+      </SafeAreaProvider>
     </View>
   );
 };
@@ -33,5 +38,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    padding: 16,
   },
 });

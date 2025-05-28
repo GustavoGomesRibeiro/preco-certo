@@ -3,24 +3,32 @@ import { ContainerWrapper } from "@/src/shared/components";
 import { SaveAll } from "@tamagui/lucide-icons";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button, Text } from "tamagui";
+import useFormStore from "./store/form-store";
 
 type FormValues = {
+  id: number;
   nomeProduto: string;
   precoProduto: number;
   quantidadeProduto: number;
 };
 
 export const Forms = () => {
+  const { addProduto, produtos } = useFormStore();
   const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       nomeProduto: "",
-      precoProduto: 0,
-      quantidadeProduto: 0,
+      precoProduto: undefined,
+      quantidadeProduto: undefined,
     },
   });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log("Form submitted with data:", data);
+    addProduto({
+      id: Date.now(),
+      nome: data.nomeProduto,
+      preco: data.precoProduto,
+      quantidade: data.quantidadeProduto,
+    });
   };
 
   return (
@@ -30,6 +38,12 @@ export const Forms = () => {
         fieldName="nomeProduto"
         control={control}
         placeholder="Nome do Produto"
+        rules={{
+          required: {
+            value: true,
+            message: "O campo nome do produto é obrigatório.",
+          },
+        }}
       />
       <InputText
         fieldName="quantidadeProduto"
@@ -37,6 +51,12 @@ export const Forms = () => {
         placeholder="Quantidade em gramas"
         label="Quantidade do Produto (g)"
         type="numeric"
+        rules={{
+          required: {
+            value: true,
+            message: "O campo quantidade é obrigatório.",
+          },
+        }}
       />
       <InputText
         fieldName="precoProduto"
@@ -45,6 +65,9 @@ export const Forms = () => {
         label="Custo do Produto (R$)"
         type="numeric"
         formatarToBRL
+        rules={{
+          required: { value: true, message: "O campo preço é obrigatório." },
+        }}
       />
       <Button
         onPress={handleSubmit(onSubmit)}

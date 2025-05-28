@@ -7,6 +7,14 @@ const LayoutStack = () => {
         name="formulario-base/index"
         options={{ title: "Formulario" }}
       />
+      <Stack.Screen
+        name="lista-produtos-base/index"
+        options={{ title: "Lista de Produtos" }}
+      />
+      <Stack.Screen
+        name="lista-receitas/index"
+        options={{ title: "Lista de Receitas" }}
+      />
     </Stack>
   );
 };

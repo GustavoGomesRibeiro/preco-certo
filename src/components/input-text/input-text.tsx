@@ -12,7 +12,7 @@ import {
   KeyboardTypeIOS,
   View,
 } from "react-native";
-import { Input, Label } from "tamagui";
+import { Input, Label, Text } from "tamagui";
 
 type InputTextProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -40,12 +40,14 @@ export const InputText = <
   label,
   type,
   formatarToBRL,
+  rules,
 }: InputTextProps<TFieldValues, TName>) => {
   return (
     <Controller
       name={fieldName}
       control={control}
-      render={({ field: { onChange, value } }) => (
+      rules={rules}
+      render={({ field: { onChange, value }, fieldState }) => (
         <View style={{ flex: 1 }}>
           <Label htmlFor={label} fontWeight="bold">
             {label}
@@ -72,6 +74,7 @@ export const InputText = <
             style={{ borderBottomWidth: 1, borderBottomColor: "grey" }}
             keyboardType={type}
           />
+          <Text color={"red"}>{fieldState.error?.message}</Text>
         </View>
       )}
     />

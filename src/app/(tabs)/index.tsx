@@ -1,28 +1,44 @@
-import { ScrollView, StyleSheet } from "react-native";
+import { router } from "expo-router";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { BotaoAdicionar } from "@/src/components";
+import { Card } from "@/src/components/card/card";
 import { ThemedText } from "@/src/components/ThemedText";
 import { ThemedView } from "@/src/components/ThemedView";
 import { ContainerWrapper } from "@/src/shared/components";
 
 export default function HomeScreen() {
   return (
-    // <ParallaxScrollView
-    //   headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-    //   headerImage={
-    //     <Image
-    //       source={require("@/src/assets/images/partial-react-logo.png")}
-    //       style={styles.reactLogo}
-    //     />
-    //   }
-    // >
-    // </ParallaxScrollView>
     <ContainerWrapper>
-      <ScrollView>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Welcome!</ThemedText>
-        </ThemedView>
-      </ScrollView>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="title" darkColor="#000">
+          Tela inicial
+        </ThemedText>
+      </ThemedView>
+
+      <View style={styles.containerButton}>
+        <TouchableOpacity
+          onPress={() => router.navigate("/(stack)/lista-produtos-base")}
+        >
+          <Card
+            tipo="produto"
+            titulo="Produtos Cadastrados"
+            descricao="Produtos base cadastrados"
+          />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.containerButton}>
+        <TouchableOpacity
+          onPress={() => router.navigate("/(stack)/lista-receitas")}
+        >
+          <Card
+            tipo="receita"
+            titulo="Receitas Cadastradas"
+            descricao="Receitas cadastradas"
+          />
+        </TouchableOpacity>
+      </View>
       <BotaoAdicionar />
     </ContainerWrapper>
   );
@@ -44,5 +60,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: "absolute",
+  },
+  containerButton: {
+    marginTop: 20,
   },
 });

@@ -11,7 +11,10 @@ export const BotaoAdicionar = () => {
         height={70}
         borderRadius={40}
         backgroundColor={"#ea1d2c"}
-        onPress={() => router.navigate("/(stack)/formulario-base")}
+        onPress={() => {
+          router.navigate("/(stack)/formulario-base");
+          // fetchAlimentos("abacaxi");
+        }}
       />
     </View>
   );
@@ -19,9 +22,10 @@ export const BotaoAdicionar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
-    top: 600,
-    left: 270,
-    zIndex: 1000,
+    flex: 1,
+    height: 300,
+    display: "flex",
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
   },
 });

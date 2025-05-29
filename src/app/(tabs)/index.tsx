@@ -39,6 +39,18 @@ export default function HomeScreen() {
           />
         </TouchableOpacity>
       </View>
+
+      <View style={styles.containerButton}>
+        <TouchableOpacity
+          onPress={() => router.navigate("/(tabs)/calculadora")}
+        >
+          <Card
+            tipo="calculadora"
+            titulo="Precificação"
+            descricao="Calcule o preço de venda do seu produto"
+          />
+        </TouchableOpacity>
+      </View>
       <BotaoAdicionar />
     </ContainerWrapper>
   );

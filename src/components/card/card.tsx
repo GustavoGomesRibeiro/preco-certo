@@ -7,7 +7,7 @@ import { ConditionalRender } from "../conditional-render/conditional-render";
 type CardProps = {
   titulo: string;
   descricao: string;
-  tipo: "produto" | "receita";
+  tipo: "produto" | "receita" | "calculadora";
 };
 
 export const Card: FC<CardProps> = ({ titulo, descricao, tipo }) => {
@@ -38,6 +38,17 @@ export const Card: FC<CardProps> = ({ titulo, descricao, tipo }) => {
               ref={animation}
               style={styles.lottie}
               source={require("@/src/assets/lottie/receitas.json")}
+            />
+          </ConditionalRender>
+        </View>
+
+        <View style={styles.containerLottie}>
+          <ConditionalRender conditional={tipo === "calculadora"}>
+            <LottieView
+              autoPlay
+              ref={animation}
+              style={styles.lottie}
+              source={require("@/src/assets/lottie/calculator.json")}
             />
           </ConditionalRender>
         </View>

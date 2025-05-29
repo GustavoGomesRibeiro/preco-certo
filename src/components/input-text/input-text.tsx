@@ -24,6 +24,8 @@ type InputTextProps<
   fieldName: TName;
   control: Control<TFieldValues>;
   placeholder?: string;
+  width?: number;
+  minWidth?: number;
   rules?: Omit<
     RegisterOptions<TFieldValues, TName>,
     "valueAsNumber" | "valueAsDate" | "setValueAs" | "disabled"
@@ -41,6 +43,8 @@ export const InputText = <
   type,
   formatarToBRL,
   rules,
+  width = 300,
+  minWidth = 300,
 }: InputTextProps<TFieldValues, TName>) => {
   return (
     <Controller
@@ -49,7 +53,7 @@ export const InputText = <
       rules={rules}
       render={({ field: { onChange, value }, fieldState }) => (
         <View style={{ flex: 1 }}>
-          <Label htmlFor={label} fontWeight="bold">
+          <Label htmlFor={label} fontWeight="bold" fontSize={16}>
             {label}
           </Label>
           <Input
@@ -63,8 +67,8 @@ export const InputText = <
                 : (e) => onChange(e)
             }
             placeholder={placeholder}
-            width={300}
-            minWidth={300}
+            width={width}
+            minWidth={minWidth}
             flex={1}
             gap={8}
             marginBottom={10}

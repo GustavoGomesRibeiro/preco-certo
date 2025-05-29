@@ -1,7 +1,9 @@
 import { InputText } from "@/src/components/input-text/input-text";
 import { ContainerWrapper } from "@/src/shared/components";
 import { SaveAll } from "@tamagui/lucide-icons";
+import { router } from "expo-router";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Text } from "tamagui";
 import useFormStore from "./store/form-store";
 
@@ -13,8 +15,8 @@ type FormValues = {
 };
 
 export const Forms = () => {
-  const { addProduto, produtos } = useFormStore();
-  const { control, handleSubmit } = useForm<FormValues>({
+  const { addProduto } = useFormStore();
+  const { control, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: {
       nomeProduto: "",
       precoProduto: undefined,
@@ -29,6 +31,7 @@ export const Forms = () => {
       preco: data.precoProduto,
       quantidade: data.quantidadeProduto,
     });
+    reset();
   };
 
   return (
@@ -86,6 +89,25 @@ export const Forms = () => {
           Salvar
         </Text>
       </Button>
+
+      <View style={styles.containerBotaoLista}>
+        <TouchableOpacity
+          onPress={() => router.navigate("/(stack)/lista-produtos-base")}
+        >
+          <Text fontWeight={"bold"} fontSize={16}>
+            Ver lista de itens
+          </Text>
+        </TouchableOpacity>
+      </View>
     </ContainerWrapper>
   );
 };
+
+const styles = StyleSheet.create({
+  containerBotaoLista: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+});

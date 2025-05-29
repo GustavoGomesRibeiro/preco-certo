@@ -1,11 +1,26 @@
+import ParallaxScrollView from "@/src/components/ParallaxScrollView";
+import { ThemedText } from "@/src/components/ThemedText";
+import { ThemedView } from "@/src/components/ThemedView";
 import { Select } from "@/src/containers/select";
-import { ContainerWrapper } from "@/src/shared/components";
-import { formatToBRLCustoTotal } from "@/src/shared/utils/format-currency";
+import {
+  formatToBRLCustoTotal,
+  parseBRL,
+} from "@/src/shared/utils/format-currency";
 import { CheckCheck } from "@tamagui/lucide-icons";
+import { Image } from "expo-image";
 import { Trash2 } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
+import {
+  Animated as AnimatedRC,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
+import Animated, { useAnimatedRef } from "react-native-reanimated";
+
 import { Button, Input, Label, Text } from "tamagui";
 import useFormStore from "../forms/store/form-store";
 
@@ -13,31 +28,38 @@ type FormValues = {
   id: number;
   nomeProduto: string;
   precoProduto: number;
-  quantidadeProduto: number;
+  [key: `quantidadeProduto_${number}`]: string | number | undefined;
 };
 
 export const FormCalculadora = () => {
-  const { produtos } = useFormStore();
-  const { control, handleSubmit, reset } = useForm<FormValues>({
+  const [paddingBottom] = useState(95);
+
+  const {
+    produtos,
+    inputs,
+    selectedProducts,
+    custos,
+    addInput,
+    removeInput,
+    setInput,
+    setSelectedProduct,
+    setCusto,
+  } = useFormStore();
+  const { control, handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
       precoProduto: undefined,
-      quantidadeProduto: undefined,
+      quantidadeProduto_0: "",
     },
   });
-  const [custos, setCustos] = useState<number[]>([0]);
-  const [teste, setTeste] = useState<number>(0);
-  const [selectedProducts, setSelectedProducts] = useState<(number | null)[]>([
-    null,
-  ]);
-  const [inputs, setInputs] = useState<{ preco: string; gramas: string }[]>([
-    { preco: "", gramas: "" },
-  ]);
 
-  console.log(inputs, ">><<");
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
+
   const handleAddInput = () => {
-    setInputs((prev) => [...prev, { preco: "", gramas: "" }]);
-    setSelectedProducts((prev) => [...prev, null]);
-    setCustos((prev) => [...prev, 0]);
+    addInput();
+    setValue(`quantidadeProduto_${inputs.length}`, "");
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
   };
 
   const handleChangeInput = (
@@ -45,203 +67,227 @@ export const FormCalculadora = () => {
     text: string,
     idx: number
   ) => {
-    setInputs((prev) =>
-      prev.map((item, i) => (i === idx ? { ...item, [field]: text } : item))
-    );
+    setInput(idx, field, text);
   };
 
   const handleRemoveInput = (idx: number) => {
-    setInputs((prev) => prev.filter((_, i) => i !== idx));
-    setSelectedProducts((prev) => prev.filter((_, i) => i !== idx));
-    setCustos((prev) => prev.filter((_, i) => i !== idx));
+    removeInput(idx);
   };
 
   const handleSelectProduct = (produtoIdStr: string, idx: number) => {
     const produtoId = Number(produtoIdStr);
-    setSelectedProducts((prev) =>
-      prev.map((v, i) => (i === idx ? produtoId : v))
-    );
-    const produto = produtos.find((p) => p.id === produtoId);
-    if (produto) {
-      setInputs((prev) =>
-        prev.map((item, i) =>
-          i === idx
-            ? {
-                preco: produto.preco.toString(),
-                gramas: produto.quantidade.toString(),
-              }
-            : item
-        )
-      );
-    }
+    setSelectedProduct(idx, produtoId, produtos);
   };
 
-  function parseBRL(value: string): number {
-    if (!value) return 0;
-    // Remove "R$", pontos e troca vírgula por ponto
-    return Number(
-      value.replace("R$", "").replace(/\./g, "").replace(",", ".").trim()
-    );
-  }
+  const handleQuantidadeChange = (e: string, idx: number) => {
+    const valor = Number(e.replace(",", "."));
+    const preco = parseBRL(inputs[idx].preco);
+    const gramas = Number(inputs[idx].gramas);
+    const custo = preco && gramas && valor ? (preco / gramas) * valor : 0;
+    setCusto(idx, custo);
+  };
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<FormValues> = () => {
     handleAddInput();
-    // reset();
   };
 
-  console.log(teste, "><<");
-  const handlePrice = (
-    preco: number,
-    gramasTotal: number,
-    gramasUtilizada: number
-  ) => {
-    console.log(preco, ">>preco<<");
-    console.log(gramasTotal, ">><<");
-    console.log(gramasUtilizada, ">>gramasUtilizada<<");
-    if (!preco || !gramasTotal || !gramasUtilizada) return 0;
-    return setTeste((preco / gramasTotal) * gramasUtilizada);
-  };
+  const animatedPadding = useRef(new AnimatedRC.Value(95)).current;
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
+      AnimatedRC.timing(animatedPadding, {
+        toValue: 45,
+        duration: 250,
+        useNativeDriver: false,
+      }).start();
+    });
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      AnimatedRC.timing(animatedPadding, {
+        toValue: 95,
+        duration: 250,
+        useNativeDriver: false,
+      }).start();
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [animatedPadding]);
 
   return (
-    <ContainerWrapper>
-      <View style={{ width: "100%", alignItems: "center" }}>
-        {inputs.map((item, idx) => (
-          <View key={idx}>
-            <View style={styles.containerLabel}>
-              <Label fontWeight={"bold"} fontSize={16}>
-                Produto
-              </Label>
-              {inputs.length > 1 && (
-                <Button
-                  onPress={() => handleRemoveInput(idx)}
-                  size="$2"
-                  backgroundColor="#fff"
-                  marginLeft={8}
-                  icon={<Trash2 color="#ea1d2c" size={18} />}
-                  circular
-                />
-              )}
-            </View>
-
-            <Select
-              value={selectedProducts[idx]?.toString() ?? ""}
-              onValueChange={(val) => handleSelectProduct(val, idx)}
-            />
-            <View style={styles.containerInput}>
-              <View>
-                <Label fontWeight={"bold"} fontSize={16}>
-                  Preço (R$)
-                </Label>
-                <Input
-                  value={item.preco}
-                  onChangeText={(text) => handleChangeInput("preco", text, idx)}
-                  placeholder="Preço"
-                  width={150}
-                  marginBottom={10}
-                  marginRight={4}
-                  disabled
-                />
-              </View>
-
-              <View>
-                <Label fontWeight={"bold"} fontSize={16}>
-                  Gramas (g)
-                </Label>
-                <Input
-                  value={item.gramas}
-                  onChangeText={(text) =>
-                    handleChangeInput("gramas", text, idx)
-                  }
-                  placeholder="Gramas"
-                  width={150}
-                  marginBottom={10}
-                  marginLeft={4}
-                  disabled
-                />
-              </View>
-            </View>
-            <View style={styles.containerInput}>
-              <View>
-                <Controller
-                  name="quantidadeProduto"
-                  control={control}
-                  rules={{
-                    required: { value: true, message: "Campo obrigatório" },
-                  }}
-                  render={({ field: { onChange, value }, fieldState }) => (
-                    <View style={{ flex: 1 }}>
-                      <Label fontWeight={"bold"} fontSize={16}>
-                        (g) utilizadas
-                      </Label>
-                      <Input
-                        value={String(value)}
-                        onChangeText={(e) => {
-                          const valor = Number(e.replace(",", "."));
-                          onChange(e);
-                          handlePrice(
-                            parseBRL(item.preco),
-                            Number(item.gramas),
-                            valor
-                          );
-                        }}
-                        placeholder="Gramas"
-                        width={150}
-                        marginBottom={10}
-                        marginRight={4}
-                        keyboardType="numeric"
-                      />
-                      <Text color={"red"}>{fieldState.error?.message}</Text>
-                    </View>
-                  )}
-                />
-              </View>
-
-              <View>
-                <Controller
-                  name="precoProduto"
-                  control={control}
-                  render={({ field: { onChange, value }, fieldState }) => (
-                    <View style={{ flex: 1 }}>
-                      <Label fontWeight={"bold"} fontSize={16}>
-                        Custo (R$)
-                      </Label>
-                      <Input
-                        value={formatToBRLCustoTotal(teste)}
-                        placeholder="Preço"
-                        width={150}
-                        marginBottom={10}
-                        marginLeft={4}
-                        keyboardType="numeric"
-                        disabled
-                      />
-                    </View>
-                  )}
-                />
-              </View>
-            </View>
-          </View>
-        ))}
-      </View>
-      <Button
-        onPress={handleSubmit(onSubmit)}
-        theme="primary"
-        iconAfter={<CheckCheck size={24} color={"white"} />}
-        backgroundColor="#ea1d2c"
-        width={300}
-        minWidth={300}
-        shadowColor="#000"
-        shadowOffset={{ width: 0, height: 2 }}
-        shadowOpacity={0.25}
-        shadowRadius={3.84}
-        elevation={5}
-        marginTop={20}
-        marginBottom={20}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ParallaxScrollView
+        scrollViewRef={scrollViewRef}
+        headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+        headerImage={
+          <Image
+            source={require("@/src/assets/images/bg-calculadora.png")}
+            style={{ width: "100%", height: "100%" }}
+            contentFit="cover"
+          />
+        }
       >
-        <Text fontWeight={"bold"} fontSize={16} color={"white"}>
-          Adicionar produtos
-        </Text>
-      </Button>
-    </ContainerWrapper>
+        {/* <ContainerWrapper scrollViewRef={scrollViewRef}> */}
+        <View>
+          <ThemedView style={styles.titleContainer}>
+            <ThemedText type="title" darkColor="#000">
+              Custo por ingredientes
+            </ThemedText>
+          </ThemedView>
+          <ThemedText darkColor="#000">
+            Selecione o produto desejado e informe a quantidade utilizada.
+          </ThemedText>
+        </View>
+
+        <View style={{ width: "100%", alignItems: "center" }}>
+          {inputs.map((item, idx) => (
+            <View key={idx}>
+              <View style={styles.containerLabel}>
+                <Label fontWeight={"bold"} fontSize={16}>
+                  Produto
+                </Label>
+                {inputs.length > 1 && (
+                  <Button
+                    onPress={() => handleRemoveInput(idx)}
+                    size="$2"
+                    backgroundColor="#fff"
+                    marginLeft={8}
+                    icon={<Trash2 color="#ea1d2c" size={18} />}
+                    circular
+                  />
+                )}
+              </View>
+
+              <Select
+                value={selectedProducts[idx]?.toString() ?? ""}
+                onValueChange={(val) => handleSelectProduct(val, idx)}
+              />
+              <View style={styles.containerInput}>
+                <View>
+                  <Label fontWeight={"bold"} fontSize={16}>
+                    Preço (R$)
+                  </Label>
+                  <Input
+                    value={item.preco}
+                    onChangeText={(text) =>
+                      handleChangeInput("preco", text, idx)
+                    }
+                    placeholder="Preço"
+                    width={150}
+                    marginBottom={10}
+                    marginRight={4}
+                    disabled
+                  />
+                </View>
+
+                <View>
+                  <Label fontWeight={"bold"} fontSize={16}>
+                    Gramas (g)
+                  </Label>
+                  <Input
+                    value={item.gramas}
+                    onChangeText={(text) =>
+                      handleChangeInput("gramas", text, idx)
+                    }
+                    placeholder="Gramas"
+                    width={150}
+                    marginBottom={10}
+                    marginLeft={4}
+                    disabled
+                  />
+                </View>
+              </View>
+              <View style={styles.containerInput}>
+                <View>
+                  <Controller
+                    name={`quantidadeProduto_${idx}`}
+                    control={control}
+                    rules={{
+                      required: { value: true, message: "Campo obrigatório" },
+                    }}
+                    render={({ field: { onChange, value }, fieldState }) => (
+                      <View style={{ flex: 1 }}>
+                        <Label fontWeight={"bold"} fontSize={16}>
+                          (g) utilizadas
+                        </Label>
+                        <Input
+                          value={String(value) ?? ""}
+                          onChangeText={(e) => {
+                            onChange(e);
+                            handleQuantidadeChange(e, idx);
+                          }}
+                          placeholder="Gramas"
+                          width={150}
+                          marginBottom={10}
+                          marginRight={4}
+                          keyboardType="numeric"
+                          backgroundColor={"#fff"}
+                        />
+                        <Text color={"red"}>{fieldState.error?.message}</Text>
+                      </View>
+                    )}
+                  />
+                </View>
+
+                <View>
+                  <Controller
+                    name="precoProduto"
+                    control={control}
+                    render={({ field: { onChange, value }, fieldState }) => (
+                      <View style={{ flex: 1 }}>
+                        <Label fontWeight={"bold"} fontSize={16}>
+                          Custo (R$)
+                        </Label>
+                        <Input
+                          value={formatToBRLCustoTotal(custos[idx])}
+                          placeholder="Preço"
+                          width={150}
+                          marginBottom={10}
+                          marginLeft={4}
+                          keyboardType="numeric"
+                          disabled
+                        />
+                      </View>
+                    )}
+                  />
+                </View>
+              </View>
+            </View>
+          ))}
+        </View>
+      </ParallaxScrollView>
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          paddingBottom: paddingBottom,
+          backgroundColor: "#f9f8f8",
+        }}
+      >
+        <Button
+          onPress={handleSubmit(onSubmit)}
+          theme="primary"
+          iconAfter={<CheckCheck size={24} color={"white"} />}
+          backgroundColor="#ea1d2c"
+          width={300}
+          minWidth={300}
+          shadowColor="#000"
+          shadowOffset={{ width: 0, height: 2 }}
+          shadowOpacity={0.25}
+          shadowRadius={3.84}
+          elevation={5}
+          marginTop={20}
+          marginBottom={20}
+        >
+          <Text fontWeight={"bold"} fontSize={16} color={"white"}>
+            Adicionar produto
+          </Text>
+        </Button>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -256,5 +302,9 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     marginTop: 10,
+  },
+  titleContainer: {
+    flexDirection: "row",
+    gap: 8,
   },
 });

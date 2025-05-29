@@ -23,7 +23,7 @@ export const BotaoAdicionar = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: 300,
+    height: 150,
     display: "flex",
     alignItems: "flex-end",
     justifyContent: "flex-end",

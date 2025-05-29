@@ -17,3 +17,10 @@ export function formatToBRLCustoTotal(value: number): string {
     minimumFractionDigits: 2,
   });
 }
+
+export function parseBRL(value: string): number {
+  if (!value) return 0;
+  return Number(
+    value.replace("R$", "").replace(/\./g, "").replace(",", ".").trim()
+  );
+}

@@ -1,8 +1,9 @@
 import { formatToBRLCustoTotal } from "@/src/shared/utils/format-currency";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
 
-import { Button, Input, Label, Text } from "tamagui";
+import masks from "@/src/shared/utils/masks";
+import { Input, Label, Text } from "tamagui";
 import useFormStore from "../forms/store/form-store";
 
 type FormResultadosProps = {
@@ -16,45 +17,44 @@ type FormResultadosProps = {
   precoFinal: number;
 };
 export const FormResultados = () => {
-  const {
-    totalCusto,
-    lucroDesejado,
-    unidades,
-    precoEmbalagem,
-    setPrecoEmbalagem,
-    setUnidades,
-    setLucroDesejado,
-  } = useFormStore();
-  const { control, handleSubmit } = useForm<FormResultadosProps>();
+  const { totalCusto } = useFormStore();
+  const { control, watch } = useForm<FormResultadosProps>();
 
-  const onSubmit: SubmitHandler<FormResultadosProps> = (data) => {
-    setLucroDesejado(data.custosIncalculaveis * data.multiploLucroMaoDeObra);
-    setUnidades(data.rendimentoProduto);
-    setPrecoEmbalagem(data.precoEmbalagem);
-    console.log(data, ">><");
-  };
+  const custosIncalculaveisTotal = totalCusto * 1.25;
+  const multiploLucroMaoDeObra = watch("multiploLucroMaoDeObra") || 1;
+  const rendimentoProduto = watch("rendimentoProduto") || 1;
+  const precoPorEmbalagem = watch("precoEmbalagem");
+  const lucroDesejadoCalc =
+    custosIncalculaveisTotal * Number(multiploLucroMaoDeObra);
+  const precoUnidadeCalculado = lucroDesejadoCalc / rendimentoProduto;
+  const unmaskedValue = masks.currency.unmask(String(precoPorEmbalagem));
+  const unMaskPrecoEmbalagem =
+    (typeof unmaskedValue === "number"
+      ? unmaskedValue
+      : Number(unmaskedValue) || 0) / 100;
+  const precoUnidadeFinalCalculada =
+    Number(precoUnidadeCalculado) + Number(unMaskPrecoEmbalagem);
+
   return (
     <>
       <View>
         <Controller
           name="totalCustoIngredientes"
           control={control}
-          render={({ field: { onChange, value }, fieldState }) => (
+          render={() => (
             <View style={{ flex: 1 }}>
               <Label fontWeight="bold" fontSize={16}>
-                Custo Ingredientes
+                Custos Ingredientes
               </Label>
               <Input
                 value={formatToBRLCustoTotal(totalCusto)}
-                onChangeText={(e) => {
-                  onChange(e);
-                }}
                 placeholder="Gramas"
                 width={150}
                 marginBottom={10}
                 marginRight={4}
                 keyboardType="numeric"
                 backgroundColor="#fff"
+                disabled
               />
             </View>
           )}
@@ -65,22 +65,20 @@ export const FormResultados = () => {
         <Controller
           name="custosIncalculaveis"
           control={control}
-          render={({ field: { onChange, value }, fieldState }) => (
+          render={() => (
             <View style={{ flex: 1 }}>
               <Label fontWeight="bold" fontSize={16}>
-                Custo Incalculáveis
+                Custos Incalculáveis
               </Label>
               <Input
-                value={formatToBRLCustoTotal(totalCusto * 1.25)}
-                onChangeText={(e) => {
-                  onChange(e);
-                }}
+                value={formatToBRLCustoTotal(custosIncalculaveisTotal)}
                 placeholder="Gramas"
                 width={150}
                 marginBottom={10}
                 marginRight={4}
                 keyboardType="numeric"
                 backgroundColor="#fff"
+                disabled
               />
             </View>
           )}
@@ -92,19 +90,17 @@ export const FormResultados = () => {
           name="multiploLucroMaoDeObra"
           control={control}
           rules={{
-            required: { value: true, message: "Campo obrigatporio" },
+            required: { value: true, message: "Campo obrigatório" },
           }}
-          render={({ field: { onChange, value }, fieldState }) => (
+          render={({ field: { value, onChange }, fieldState }) => (
             <View style={{ flex: 1 }}>
               <Label fontWeight="bold" fontSize={16}>
                 Multiplique o valor:
               </Label>
               <Input
-                value={String(value) ?? ""}
-                onChangeText={(e) => {
-                  onChange(e);
-                }}
-                placeholder="Gramas"
+                value={String(value ?? "")}
+                onChangeText={(e) => onChange(Number(e.replace(",", ".")))}
+                placeholder="Ex: 2"
                 width={150}
                 marginBottom={10}
                 marginRight={4}
@@ -116,26 +112,25 @@ export const FormResultados = () => {
           )}
         />
       </View>
+
       <View>
         <Controller
           name="lucroDesejado"
           control={control}
-          render={({ field: { onChange, value }, fieldState }) => (
+          render={() => (
             <View style={{ flex: 1 }}>
               <Label fontWeight="bold" fontSize={16}>
                 Lucro desejado:
               </Label>
               <Input
-                value={formatToBRLCustoTotal(lucroDesejado)}
-                onChangeText={(e) => {
-                  onChange(e);
-                }}
-                placeholder="Gramas"
+                value={formatToBRLCustoTotal(lucroDesejadoCalc)}
+                placeholder="Lucro desejado"
                 width={150}
                 marginBottom={10}
                 marginRight={4}
                 keyboardType="numeric"
                 backgroundColor="#fff"
+                disabled
               />
             </View>
           )}
@@ -155,11 +150,11 @@ export const FormResultados = () => {
                 Quantas unidades rendeu:
               </Label>
               <Input
-                value={String(value)}
+                value={String(value ?? "")}
                 onChangeText={(e) => {
                   onChange(e);
                 }}
-                placeholder="Gramas"
+                placeholder="Rendimento"
                 width={150}
                 marginBottom={10}
                 marginRight={4}
@@ -176,22 +171,20 @@ export const FormResultados = () => {
         <Controller
           name="precoUnidade"
           control={control}
-          render={({ field: { onChange, value }, fieldState }) => (
+          render={() => (
             <View style={{ flex: 1 }}>
               <Label fontWeight="bold" fontSize={16}>
                 Preço p/ unidade:
               </Label>
               <Input
-                value={formatToBRLCustoTotal(lucroDesejado / unidades)}
-                onChangeText={(e) => {
-                  onChange(e);
-                }}
-                placeholder="Gramas"
+                value={formatToBRLCustoTotal(precoUnidadeCalculado)}
+                placeholder="Preco unidade"
                 width={150}
                 marginBottom={10}
                 marginRight={4}
                 keyboardType="numeric"
                 backgroundColor="#fff"
+                disabled
               />
             </View>
           )}
@@ -208,14 +201,14 @@ export const FormResultados = () => {
           render={({ field: { onChange, value }, fieldState }) => (
             <View style={{ flex: 1 }}>
               <Label fontWeight="bold" fontSize={16}>
-                Preço p/ balagem:
+                Preço p/ embalagem:
               </Label>
               <Input
-                value={String(value) ?? ""}
+                value={masks.currencyInput.mask(value)}
                 onChangeText={(e) => {
-                  onChange(e);
+                  onChange(masks.currencyInput.mask(e));
                 }}
-                placeholder="Gramas"
+                placeholder="Preço embalagem"
                 width={150}
                 marginBottom={10}
                 marginRight={4}
@@ -232,28 +225,25 @@ export const FormResultados = () => {
         <Controller
           name="precoFinal"
           control={control}
-          render={({ field: { onChange, value }, fieldState }) => (
+          render={() => (
             <View style={{ flex: 1 }}>
               <Label fontWeight="bold" fontSize={16}>
                 Preço final:
               </Label>
               <Input
-                value={formatToBRLCustoTotal(precoEmbalagem)}
-                onChangeText={(e) => {
-                  onChange(e);
-                }}
-                placeholder="Gramas"
+                value={masks.currency.mask(precoUnidadeFinalCalculada)}
+                placeholder="Preço final"
                 width={150}
                 marginBottom={10}
                 marginRight={4}
                 keyboardType="numeric"
                 backgroundColor="#fff"
+                disabled
               />
             </View>
           )}
         />
       </View>
-      <Button onPress={handleSubmit(onSubmit)}> Calcular </Button>
     </>
   );
 };

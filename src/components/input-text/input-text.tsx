@@ -1,4 +1,4 @@
-import { formatToBRL } from "@/src/shared/utils/format-currency";
+import masks from "@/src/shared/utils/masks";
 import {
   Control,
   Controller,
@@ -63,7 +63,7 @@ export const InputText = <
             value={value}
             onChangeText={
               formatarToBRL
-                ? (e) => onChange(formatToBRL(e))
+                ? (e) => onChange(masks.currencyInput.mask(e))
                 : (e) => onChange(e)
             }
             placeholder={placeholder}

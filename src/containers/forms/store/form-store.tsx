@@ -18,6 +18,14 @@ type FormStore = {
   inputs: InputItem[];
   selectedProducts: (number | null)[];
   custos: number[];
+  totalCusto: number;
+  lucroDesejado: number;
+  unidades: number;
+  precoEmbalagem: number;
+  setPrecoEmbalagem: (valor: number) => void;
+  setUnidades: (valor: number) => void;
+  setLucroDesejado: (valor: number) => void;
+  setTotalCusto: (valor: number) => void;
   addInput: () => void;
   removeInput: (idx: number) => void;
   setInput: (idx: number, field: "preco" | "gramas", value: string) => void;
@@ -40,6 +48,14 @@ const useFormStore = create<FormStore>((set) => ({
   inputs: [{ preco: "", gramas: "" }],
   selectedProducts: [null],
   custos: [0],
+  totalCusto: 0,
+  lucroDesejado: 0,
+  unidades: 0,
+  precoEmbalagem: 0,
+  setPrecoEmbalagem: (valor: number) => set({ totalCusto: valor }),
+  setUnidades: (valor: number) => set({ totalCusto: valor }),
+  setLucroDesejado: (valor: number) => set({ totalCusto: valor }),
+  setTotalCusto: (valor: number) => set({ totalCusto: valor }),
   setProdutoSelecionado: (produto) => set({ produtoSelecionado: produto }),
   addProduto: (produto) =>
     set((state) => ({ produtos: [...state.produtos, produto] })),

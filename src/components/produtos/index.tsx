@@ -1,71 +1,97 @@
+import useFormStore, { Produto } from "@/src/containers/forms/store/form-store";
+import { router } from "expo-router";
 import { FC } from "react";
-import { StyleSheet, View } from "react-native";
-import { Card, Image, Paragraph, XStack } from "tamagui";
+import { StyleSheet, Text, View } from "react-native";
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import { Card, Image } from "tamagui";
+import SwipeableActions from "../swipeable";
+
 type ProdutosProps = {
   nomeProduto: string;
   qntGramas: number;
   valorProduto: number;
+  produto: Produto;
 };
 
 const Produtos: FC<ProdutosProps> = ({
   nomeProduto,
   qntGramas,
   valorProduto,
+  produto,
 }) => {
+  const { removeProduto } = useFormStore();
+
+  const handleEditar = () => {
+    useFormStore.getState().setProdutoSelecionado(produto);
+    router.navigate("/(stack)/formulario-base");
+  };
+
+  const renderActions = () => (
+    <SwipeableActions
+      onEditar={() => handleEditar()}
+      onExcluir={() => removeProduto(produto.id)}
+    />
+  );
+
   return (
-    <Card
-      elevate
-      size="$1"
-      bordered
-      width={150}
-      height={200}
-      display="flex"
-      gap={10}
-      backgroundColor="#fff"
-      borderRadius={10}
-    >
-      <Card.Footer
-        padded
-        display="flex"
-        flexDirection="column"
-        alignItems="flex-start"
-        justifyContent="center"
-      >
-        <XStack flex={1} />
-        <View style={styles.descricaoProduto}>
-          <Paragraph theme="alt2" fontWeight={800}>
-            {nomeProduto}
-          </Paragraph>
-          <Paragraph theme="alt2" fontWeight={300}>
-            {qntGramas} (g)
-          </Paragraph>
-        </View>
-        <View style={styles.descricaoProduto}>
-          <Paragraph theme="alt2" color="#4e9d77" fontWeight={800}>
-            {valorProduto}
-          </Paragraph>
-        </View>
-      </Card.Footer>
-      <Card.Background>
+    <Swipeable renderRightActions={renderActions}>
+      <Card style={styles.card}>
         <Image
-          resizeMode="contain"
-          alignSelf="center"
-          source={{
-            width: 100,
-            height: 100,
-            uri: require("@/src/assets/images/mercado.jpg"),
-          }}
+          source={{ uri: require("@/src/assets/images/mercado.jpg") }}
+          style={styles.image}
         />
-      </Card.Background>
-    </Card>
+        <View style={styles.info}>
+          <Text style={styles.nome}>{produto.nome}</Text>
+          <View style={styles.row}>
+            <Text style={styles.quantidade}>{produto.gramas}</Text>
+            <Text style={styles.preco}>{produto.preco}</Text>
+          </View>
+        </View>
+      </Card>
+    </Swipeable>
   );
 };
 
 export default Produtos;
 
 const styles = StyleSheet.create({
-  descricaoProduto: {
-    display: "flex",
-    flexDirection: "column",
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    margin: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
+    width: 350,
+  },
+  image: {
+    width: "100%",
+    height: 140,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  info: {
+    padding: 16,
+  },
+  nome: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  quantidade: {
+    fontSize: 14,
+    color: "#777",
+    marginBottom: 8,
+  },
+  preco: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#388353",
   },
 });

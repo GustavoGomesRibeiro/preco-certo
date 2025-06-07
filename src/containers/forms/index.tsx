@@ -1,22 +1,22 @@
 import { InputText } from "@/src/components/input-text/input-text";
+import { adicionarProduto, atualizarProduto } from "@/src/database/produtos";
 import { ContainerWrapper } from "@/src/shared/components";
 import { SaveAll } from "@tamagui/lucide-icons";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Text } from "tamagui";
 import useFormStore from "./store/form-store";
-
 type FormValues = {
-  id: number;
   nomeProduto: string;
   precoProduto: number;
   quantidadeProduto: number;
 };
 
 export const Forms = () => {
-  const { addProduto } = useFormStore();
-  const { control, handleSubmit, reset } = useForm<FormValues>({
+  const { produtoSelecionado, setProdutoSelecionado } = useFormStore();
+  const { control, handleSubmit, reset, setValue } = useForm<FormValues>({
     defaultValues: {
       nomeProduto: "",
       precoProduto: undefined,
@@ -24,14 +24,33 @@ export const Forms = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    addProduto({
-      id: Date.now(),
-      nome: data.nomeProduto,
-      preco: data.precoProduto,
-      quantidade: data.quantidadeProduto,
-    });
+  useEffect(() => {
+    if (produtoSelecionado) {
+      setValue("nomeProduto", produtoSelecionado.nome);
+      setValue("precoProduto", produtoSelecionado.preco);
+      setValue("quantidadeProduto", produtoSelecionado.gramas);
+    }
+  }, [produtoSelecionado]);
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    if (produtoSelecionado) {
+      await atualizarProduto(
+        data.nomeProduto,
+        data.precoProduto,
+        data.quantidadeProduto,
+        produtoSelecionado.id
+      );
+    } else {
+      await adicionarProduto(
+        data.nomeProduto,
+        data.precoProduto,
+        data.quantidadeProduto
+      );
+    }
+
+    setProdutoSelecionado(null);
     reset();
+    router.navigate("/(stack)/lista-produtos-base");
   };
 
   return (

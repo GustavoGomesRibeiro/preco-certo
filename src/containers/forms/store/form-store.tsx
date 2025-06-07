@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
-type Produto = {
+export type Produto = {
   id: number;
   nome: string;
   preco: number;
-  quantidade: number;
+  gramas: number;
 };
 
 type InputItem = {
@@ -37,6 +37,7 @@ type FormStore = {
   setCusto: (idx: number, custo: number) => void;
   resetAll: () => void;
   setProdutoSelecionado: (produto: Produto | null) => void;
+  setProdutos: (produtos: Produto[]) => void;
   addProduto: (produto: Produto) => void;
   removeAllProdutos: () => void;
   removeProduto: (id: number) => void;
@@ -59,6 +60,7 @@ const useFormStore = create<FormStore>((set) => ({
   setProdutoSelecionado: (produto) => set({ produtoSelecionado: produto }),
   addProduto: (produto) =>
     set((state) => ({ produtos: [...state.produtos, produto] })),
+  setProdutos: (produtos) => set({ produtos }),
   removeProduto: (id) =>
     set((state) => ({
       produtos: state.produtos.filter((p) => p.id !== id),
@@ -93,7 +95,7 @@ const useFormStore = create<FormStore>((set) => ({
           i === idx && produto
             ? {
                 preco: produto.preco.toString(),
-                gramas: produto.quantidade.toString(),
+                gramas: produto.gramas.toString(),
               }
             : item
         ),

@@ -19,6 +19,7 @@ export default function RootLayout() {
   useDataBase();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    Roboto: require("../assets/fonts/Roboto.ttf"),
   });
 
   if (!loaded) {

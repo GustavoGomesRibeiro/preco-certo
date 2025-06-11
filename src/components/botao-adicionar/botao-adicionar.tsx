@@ -11,6 +11,11 @@ export const BotaoAdicionar = () => {
         height={70}
         borderRadius={40}
         backgroundColor={"#ea1d2c"}
+        shadowColor="#000"
+        shadowOffset={{ width: 0, height: 2 }}
+        shadowOpacity={0.25}
+        shadowRadius={3.84}
+        elevation={5}
         onPress={() => {
           router.navigate("/(stack)/formulario-base");
           // fetchAlimentos("abacaxi");

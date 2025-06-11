@@ -43,7 +43,7 @@ const Produtos: FC<ProdutosProps> = ({
         <View style={styles.info}>
           <Text style={styles.nome}>{produto.nome}</Text>
           <View style={styles.row}>
-            <Text style={styles.quantidade}>{produto.gramas}</Text>
+            <Text style={styles.quantidade}>{produto.gramas} (g)</Text>
             <Text style={styles.preco}>{produto.preco}</Text>
           </View>
         </View>

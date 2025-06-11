@@ -17,14 +17,6 @@ const ListaProdutosBase = () => {
       <View style={styles.containerProduto}>
         {produtos.map((produto) => (
           <Fragment key={produto.id}>
-            {/* <TouchableOpacity
-              onPress={() => {
-                useFormStore.getState().setProdutoSelecionado(produto);
-                router.navigate("/(stack)/formulario-base");
-              }}
-            >
-              <Text style={{ color: "blue", marginTop: 4 }}>Editar</Text>
-            </TouchableOpacity> */}
             <Produtos
               produto={produto}
               nomeProduto={produto.nome}
@@ -43,7 +35,6 @@ export default ListaProdutosBase;
 const styles = StyleSheet.create({
   containerProduto: {
     display: "flex",
-    // flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
   },

@@ -12,6 +12,7 @@ type FormValues = {
   nomeProduto: string;
   precoProduto: number;
   quantidadeProduto: number;
+  // nomeReceita: string;
 };
 
 export const Forms = () => {
@@ -55,6 +56,12 @@ export const Forms = () => {
 
   return (
     <ContainerWrapper>
+      {/* <InputText
+        label="Nome da Receita"
+        fieldName="nomeReceita"
+        control={control}
+        placeholder="Nome da Receita"
+      /> */}
       <InputText
         label="Nome do Produto"
         fieldName="nomeProduto"
@@ -114,7 +121,7 @@ export const Forms = () => {
           onPress={() => router.navigate("/(stack)/lista-produtos-base")}
         >
           <Text fontWeight={"bold"} fontSize={16}>
-            Ver lista de itens
+            Ver produtos cadastrados
           </Text>
         </TouchableOpacity>
       </View>

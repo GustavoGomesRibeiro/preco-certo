@@ -1,7 +1,9 @@
+import BackButton from "@/src/components/back-button";
 import Produtos from "@/src/components/produtos";
 import useFormStore from "@/src/containers/forms/store/form-store";
 import { listarProdutos } from "@/src/database/produtos";
 import { ContainerWrapper } from "@/src/shared/components";
+import { router } from "expo-router";
 import { Fragment, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -14,6 +16,8 @@ const ListaProdutosBase = () => {
 
   return (
     <ContainerWrapper>
+      <BackButton navigate={() => router.back()} title="Produtos Cadastrados" />
+
       <View style={styles.containerProduto}>
         {produtos.map((produto) => (
           <Fragment key={produto.id}>

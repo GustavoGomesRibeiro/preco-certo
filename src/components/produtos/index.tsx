@@ -1,4 +1,5 @@
 import useFormStore, { Produto } from "@/src/containers/forms/store/form-store";
+import { removerProduto } from "@/src/database/produtos";
 import { router } from "expo-router";
 import { FC } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -29,7 +30,10 @@ const Produtos: FC<ProdutosProps> = ({
   const renderActions = () => (
     <SwipeableActions
       onEditar={() => handleEditar()}
-      onExcluir={() => removeProduto(produto.id)}
+      onExcluir={async () => {
+        await removerProduto(produto.id);
+        removeProduto(produto.id);
+      }}
     />
   );
 

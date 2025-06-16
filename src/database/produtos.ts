@@ -37,3 +37,7 @@ export const atualizarProduto = async (
 
   return updateProdutos;
 };
+
+export const removerProduto = async (id: number) => {
+  await db.runAsync(`DELETE FROM produtos WHERE id = ?`, [id]);
+};

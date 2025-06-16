@@ -12,6 +12,13 @@ type InputItem = {
   gramas: string;
 };
 
+type Receita = {
+  id: number;
+  nome: string;
+  descricao: string;
+  data_criacao: string;
+};
+
 type FormStore = {
   produtos: Produto[];
   produtoSelecionado?: Produto | null;
@@ -41,6 +48,8 @@ type FormStore = {
   addProduto: (produto: Produto) => void;
   removeAllProdutos: () => void;
   removeProduto: (id: number) => void;
+  receitas: Receita[];
+  setReceitas: (receitas: Receita[]) => void;
 };
 
 const useFormStore = create<FormStore>((set) => ({
@@ -105,6 +114,8 @@ const useFormStore = create<FormStore>((set) => ({
     set((state) => ({
       custos: state.custos.map((c, i) => (i === idx ? custo : c)),
     })),
+  receitas: [],
+  setReceitas: (receitas) => set({ receitas }),
   resetAll: () =>
     set({
       inputs: [{ preco: "", gramas: "" }],

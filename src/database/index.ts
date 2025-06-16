@@ -32,3 +32,5 @@ export const initDatabase = async () => {
     );
   `);
 };
+
+export const sqlLite = SQLite.openDatabaseSync("meuBanco.db");

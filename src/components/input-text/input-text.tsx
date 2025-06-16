@@ -53,13 +53,17 @@ export const InputText = <
       rules={rules}
       render={({ field: { onChange, value }, fieldState }) => (
         <View style={{ flex: 1 }}>
-          <Label htmlFor={label} fontWeight="bold" fontSize={16}>
+          <Label
+            style={{ fontFamily: "Roboto" }}
+            htmlFor={label}
+            fontWeight="bold"
+            fontSize={16}
+          >
             {label}
           </Label>
           <Input
-            borderWidth={0}
-            borderColor="transparent"
-            backgroundColor="transparent"
+            borderColor="grey"
+            backgroundColor="#f6f6fa"
             value={value}
             onChangeText={
               formatarToBRL
@@ -72,10 +76,10 @@ export const InputText = <
             flex={1}
             gap={8}
             marginBottom={10}
-            borderRadius={0}
+            borderRadius={10}
             paddingVertical={0}
-            paddingHorizontal={0}
-            style={{ borderBottomWidth: 1, borderBottomColor: "grey" }}
+            paddingHorizontal={10}
+            borderWidth={1}
             keyboardType={type}
           />
           <Text color={"red"}>{fieldState.error?.message}</Text>

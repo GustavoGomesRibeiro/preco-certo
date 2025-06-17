@@ -5,7 +5,7 @@ const LayoutStack = () => {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name="formulario-base/index"
-        options={{ title: "Formulario" }}
+        options={{ title: "Formulário" }}
       />
       <Stack.Screen
         name="lista-produtos-base/index"
@@ -14,6 +14,10 @@ const LayoutStack = () => {
       <Stack.Screen
         name="lista-receitas/index"
         options={{ title: "Lista de Receitas" }}
+      />
+      <Stack.Screen
+        name="receita/[id]"
+        options={{ title: "Detalhes da Receita" }}
       />
     </Stack>
   );

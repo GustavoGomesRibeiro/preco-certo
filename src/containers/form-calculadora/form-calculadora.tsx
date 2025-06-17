@@ -4,7 +4,6 @@ import {
   formatToBRLCustoTotal,
   parseBRL,
 } from "@/src/shared/utils/format-currency";
-import { CheckCheck } from "@tamagui/lucide-icons";
 import { Image } from "expo-image";
 import { Trash2 } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
@@ -20,9 +19,9 @@ import {
 } from "react-native";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 
-import { ConditionalRender } from "@/src/components/conditional-render/conditional-render";
 import { ThemedText } from "@/src/components/ThemedText";
 import { ThemedView } from "@/src/components/ThemedView";
+import { listarReceitasComIngredientes } from "@/src/database/receitas";
 import { Button, Input, Label, Text } from "tamagui";
 import { FormResultados } from "../form-resultados";
 import useFormStore from "../forms/store/form-store";
@@ -42,6 +41,7 @@ export const FormCalculadora = () => {
   const {
     produtos,
     inputs,
+    produtosDaReceita,
     selectedProducts,
     custos,
     addInput,
@@ -50,6 +50,12 @@ export const FormCalculadora = () => {
     setSelectedProduct,
     setCusto,
     setTotalCusto,
+    receitas,
+    receitaSelecionada,
+    setReceitaSelecionada,
+    setProdutosDaReceita,
+    setSelectedProducts,
+    setInputs,
   } = useFormStore();
   const { control, handleSubmit, setValue } = useForm<FormValues>({
     defaultValues: {
@@ -69,7 +75,7 @@ export const FormCalculadora = () => {
   };
 
   const handleChangeInput = (
-    field: "preco" | "gramas",
+    field: "nome" | "preco" | "gramas",
     text: string,
     idx: number
   ) => {
@@ -78,11 +84,6 @@ export const FormCalculadora = () => {
 
   const handleRemoveInput = (idx: number) => {
     removeInput(idx);
-  };
-
-  const handleSelectProduct = (produtoIdStr: string, idx: number) => {
-    const produtoId = Number(produtoIdStr);
-    setSelectedProduct(idx, produtoId, produtos);
   };
 
   const handleQuantidadeChange = (e: string, idx: number) => {
@@ -124,6 +125,38 @@ export const FormCalculadora = () => {
     const total = custos.reduce((acc, curr) => acc + (Number(curr) || 0), 0);
     setTotalCusto(total);
   }, [custos, setTotalCusto]);
+
+  useEffect(() => {
+    const carregarIngredientes = async () => {
+      if (!receitaSelecionada) return;
+
+      const dados = await listarReceitasComIngredientes();
+      const ingredientesDaReceita = dados.filter(
+        (d) => d.receitaId === receitaSelecionada.id
+      );
+
+      setInputs(
+        ingredientesDaReceita.map((ing) => ({
+          nome: ing.produtoNome,
+          preco: ing.preco.toString(),
+          gramas: ing.gramas.toString(),
+        }))
+      );
+
+      setSelectedProducts(ingredientesDaReceita.map((ing) => ing.produtoId));
+
+      const produtosUnicos = ingredientesDaReceita.map((ing) => ({
+        id: ing.produtoId,
+        nome: ing.produtoNome,
+        preco: ing.preco.toString(),
+        gramas: ing.gramas.toString(),
+      }));
+
+      setProdutosDaReceita(produtosUnicos);
+    };
+
+    carregarIngredientes();
+  }, [receitaSelecionada]);
 
   return (
     <KeyboardAvoidingView
@@ -173,8 +206,25 @@ export const FormCalculadora = () => {
                 </ThemedText>
               </ThemedView>
               <ThemedText darkColor="#000">
-                Selecione o produto desejado e informe a quantidade utilizada.
+                Selecione a receita desejado e informe a quantidade utilizada.
               </ThemedText>
+
+              <View style={{ marginTop: 10 }}>
+                <Select
+                  placeholder="Selecione uma receita"
+                  items={receitas.map((r) => ({
+                    label: r.nome,
+                    value: r.id.toString(),
+                  }))}
+                  value={receitaSelecionada?.id.toString() ?? ""}
+                  onValueChange={(idStr) => {
+                    const receita = receitas.find(
+                      (r) => r.id === Number(idStr)
+                    );
+                    if (receita) setReceitaSelecionada(receita);
+                  }}
+                />
+              </View>
             </View>
 
             {inputs.map((item, idx) => (
@@ -194,17 +244,17 @@ export const FormCalculadora = () => {
                     />
                   )}
                 </View>
-                <Select
-                  value={selectedProducts[idx]?.toString() ?? ""}
-                  onValueChange={(val) => handleSelectProduct(val, idx)}
-                />
+                <Label fontWeight="bold" fontSize={14}>
+                  {item.nome}
+                </Label>
+
                 <View style={styles.containerInput}>
                   <View>
                     <Label fontWeight="bold" fontSize={16}>
                       Preço (R$)
                     </Label>
                     <Input
-                      value={item.preco}
+                      value={String(item.preco)}
                       onChangeText={(text) =>
                         handleChangeInput("preco", text, idx)
                       }
@@ -220,7 +270,7 @@ export const FormCalculadora = () => {
                       Gramas (g)
                     </Label>
                     <Input
-                      value={item.gramas}
+                      value={String(item.gramas)}
                       onChangeText={(text) =>
                         handleChangeInput("gramas", text, idx)
                       }
@@ -240,6 +290,7 @@ export const FormCalculadora = () => {
                       rules={{
                         required: { value: true, message: "Campo obrigatório" },
                       }}
+                      defaultValue=""
                       render={({ field: { onChange, value }, fieldState }) => (
                         <View style={{ flex: 1 }}>
                           <Label fontWeight="bold" fontSize={16}>
@@ -273,7 +324,7 @@ export const FormCalculadora = () => {
                             Custo (R$)
                           </Label>
                           <Input
-                            value={formatToBRLCustoTotal(custos[idx])}
+                            value={formatToBRLCustoTotal(custos[idx] ?? 0)}
                             placeholder="Preço"
                             width={150}
                             marginBottom={10}
@@ -293,37 +344,6 @@ export const FormCalculadora = () => {
 
         {activeTab === "Resultados" && <FormResultados />}
       </ParallaxScrollView>
-
-      <ConditionalRender conditional={activeTab === "Ingredientes"}>
-        <View
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            paddingBottom: paddingBottom,
-            backgroundColor: "#f9f8f8",
-          }}
-        >
-          <Button
-            onPress={handleSubmit(onSubmit)}
-            theme="primary"
-            iconAfter={<CheckCheck size={24} color="white" />}
-            backgroundColor="#ea1d2c"
-            width={300}
-            minWidth={300}
-            shadowColor="#000"
-            shadowOffset={{ width: 0, height: 2 }}
-            shadowOpacity={0.25}
-            shadowRadius={3.84}
-            elevation={5}
-            marginTop={20}
-            marginBottom={20}
-          >
-            <Text fontWeight="bold" fontSize={16} color="white">
-              Adicionar produto
-            </Text>
-          </Button>
-        </View>
-      </ConditionalRender>
     </KeyboardAvoidingView>
   );
 };

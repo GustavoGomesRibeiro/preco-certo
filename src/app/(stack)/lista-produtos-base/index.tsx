@@ -17,7 +17,7 @@ const ListaProdutosBase = () => {
   return (
     <ContainerWrapper>
       <BackButton navigate={() => router.back()} title="Produtos Cadastrados" />
-
+      {/* <QRCodeScanner /> */}
       <View style={styles.containerProduto}>
         {produtos.map((produto) => (
           <Fragment key={produto.id}>

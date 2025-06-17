@@ -16,7 +16,7 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
 
-      <View style={styles.containerButton}>
+      {/* <View style={styles.containerButton}>
         <TouchableOpacity
           onPress={() => router.navigate("/(stack)/lista-produtos-base")}
         >
@@ -26,7 +26,7 @@ export default function HomeScreen() {
             descricao="Produtos base cadastrados"
           />
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       <View style={styles.containerButton}>
         <TouchableOpacity

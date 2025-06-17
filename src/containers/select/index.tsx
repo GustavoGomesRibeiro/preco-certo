@@ -2,16 +2,30 @@ import { Check, ChevronDown, ChevronUp } from "@tamagui/lucide-icons";
 import React from "react";
 import type { SelectProps } from "tamagui";
 import { Adapt, Select as SelectUi, Sheet, YStack } from "tamagui";
-import useFormStore from "../forms/store/form-store";
 
-type ProdutoSelectProps = SelectProps & {
+type SelectItem = {
+  label: string;
   value: string;
-  onValueChange: (val: string) => void;
 };
 
-export function Select({ value, onValueChange, ...props }: ProdutoSelectProps) {
-  const { produtos } = useFormStore();
+type CustomSelectProps = SelectProps & {
+  value: string;
+  onValueChange: (val: string) => void;
+  items: SelectItem[];
+  placeholder?: string;
+  label?: string;
+  disabled?: boolean;
+};
 
+export function Select({
+  value,
+  onValueChange,
+  items,
+  placeholder = "Selecione",
+  disabled,
+  label = "",
+  ...props
+}: CustomSelectProps) {
   return (
     <SelectUi
       value={value}
@@ -19,8 +33,12 @@ export function Select({ value, onValueChange, ...props }: ProdutoSelectProps) {
       disablePreventBodyScroll
       {...props}
     >
-      <SelectUi.Trigger maxWidth={220} iconAfter={ChevronDown}>
-        <SelectUi.Value placeholder="Selecione um produto" />
+      <SelectUi.Trigger
+        maxWidth={220}
+        iconAfter={ChevronDown}
+        disabled={disabled}
+      >
+        <SelectUi.Value placeholder={placeholder} />
       </SelectUi.Trigger>
 
       <Adapt when="maxMd" platform="touch">
@@ -54,10 +72,10 @@ export function Select({ value, onValueChange, ...props }: ProdutoSelectProps) {
 
         <SelectUi.Viewport minWidth={200}>
           <SelectUi.Group>
-            <SelectUi.Label>Produtos base</SelectUi.Label>
-            {produtos.map((item, i) => (
-              <SelectUi.Item index={i} key={item.id} value={item.id.toString()}>
-                <SelectUi.ItemText>{item.nome}</SelectUi.ItemText>
+            {label && <SelectUi.Label>{label}</SelectUi.Label>}
+            {items.map((item, i) => (
+              <SelectUi.Item key={item.value} value={item.value} index={i}>
+                <SelectUi.ItemText>{item.label}</SelectUi.ItemText>
                 <SelectUi.ItemIndicator marginLeft="auto">
                   <Check size={16} />
                 </SelectUi.ItemIndicator>

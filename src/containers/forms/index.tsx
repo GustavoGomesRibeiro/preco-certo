@@ -1,31 +1,44 @@
 import { InputText } from "@/src/components/input-text/input-text";
+import { sqlLite } from "@/src/database";
 import { adicionarProduto, atualizarProduto } from "@/src/database/produtos";
+import {
+  adicionarIngredientesParaReceita,
+  adicionarReceita,
+  listarTodasReceitas,
+} from "@/src/database/receitas";
 import { ContainerWrapper } from "@/src/shared/components";
 import { SaveAll } from "@tamagui/lucide-icons";
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Text } from "tamagui";
+import { Select } from "../select";
 import useFormStore from "./store/form-store";
 type FormValues = {
   nomeProduto: string;
   precoProduto: number;
   quantidadeProduto: number;
-  // nomeReceita: string;
+  nomeReceita?: string;
+  receitaId?: number;
 };
 
 export const Forms = () => {
-  const { produtoSelecionado, setProdutoSelecionado } = useFormStore();
+  const [isNovaReceita, setIsNovaReceita] = useState(true);
+  const { produtoSelecionado, setProdutoSelecionado, receitas } =
+    useFormStore();
   const { control, handleSubmit, reset, setValue } = useForm<FormValues>({
     defaultValues: {
       nomeProduto: "",
       precoProduto: undefined,
       quantidadeProduto: undefined,
+      nomeReceita: "",
+      receitaId: undefined,
     },
   });
 
   useEffect(() => {
+    listarTodasReceitas();
     if (produtoSelecionado) {
       setValue("nomeProduto", produtoSelecionado.nome);
       setValue("precoProduto", produtoSelecionado.preco);
@@ -34,6 +47,14 @@ export const Forms = () => {
   }, [produtoSelecionado]);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    let receitaId = data.receitaId ? Number(data.receitaId) : undefined;
+
+    if (isNovaReceita && data.nomeReceita) {
+      const dataCriacao = new Date().toISOString();
+      receitaId = await adicionarReceita(data.nomeReceita, "", dataCriacao);
+    }
+
+    let produtoId: number;
     if (produtoSelecionado) {
       await atualizarProduto(
         data.nomeProduto,
@@ -41,27 +62,73 @@ export const Forms = () => {
         data.quantidadeProduto,
         produtoSelecionado.id
       );
+      produtoId = produtoSelecionado.id;
     } else {
       await adicionarProduto(
         data.nomeProduto,
         data.precoProduto,
         data.quantidadeProduto
       );
+
+      const [last] = await sqlLite.getAllAsync<{ id: number }>(
+        "SELECT id FROM produtos ORDER BY id DESC LIMIT 1"
+      );
+      produtoId = last.id;
+    }
+
+    if (receitaId && produtoId) {
+      await adicionarIngredientesParaReceita(receitaId, [
+        { produtoId, quantidade_g: data.quantidadeProduto },
+      ]);
     }
 
     setProdutoSelecionado(null);
     reset();
-    router.navigate("/(stack)/lista-produtos-base");
+    router.navigate("/(stack)/lista-receitas");
   };
-
   return (
     <ContainerWrapper>
-      {/* <InputText
-        label="Nome da Receita"
-        fieldName="nomeReceita"
-        control={control}
-        placeholder="Nome da Receita"
-      /> */}
+      {isNovaReceita ? (
+        <InputText
+          label="Nome da Receita"
+          fieldName="nomeReceita"
+          control={control}
+          placeholder="Ex: Pizza Marguerita"
+          rules={{
+            required: {
+              value: true,
+              message: "O nome da receita é obrigatório",
+            },
+          }}
+        />
+      ) : (
+        <Controller
+          control={control}
+          name="receitaId"
+          rules={{ required: true }}
+          render={({ field: { onChange, value } }) => (
+            <Select
+              value={value?.toString() ?? ""}
+              onValueChange={(val) => onChange(Number(val))}
+              placeholder="Selecione uma receita"
+              label="Receitas disponíveis"
+              items={receitas.map((r) => ({
+                label: r.nome,
+                value: r.id.toString(),
+              }))}
+            />
+          )}
+        />
+      )}
+
+      <TouchableOpacity onPress={() => setIsNovaReceita((prev) => !prev)}>
+        <Text color="blue" fontSize={14} marginBottom={10}>
+          {isNovaReceita
+            ? "Selecionar receita existente"
+            : "Cadastrar nova receita"}
+        </Text>
+      </TouchableOpacity>
+
       <InputText
         label="Nome do Produto"
         fieldName="nomeProduto"

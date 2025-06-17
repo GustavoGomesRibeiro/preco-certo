@@ -10,11 +10,11 @@ export const formatToBRL = (value: string): string => {
   });
 };
 
-export function formatToBRLCustoTotal(value: number): string {
-  return value.toLocaleString("pt-BR", {
+export function formatToBRLCustoTotal(value: number | undefined | null) {
+  const safeValue = typeof value === "number" ? value : 0;
+  return safeValue.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
-    minimumFractionDigits: 2,
   });
 }
 

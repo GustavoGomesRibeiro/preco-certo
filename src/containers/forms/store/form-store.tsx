@@ -8,6 +8,7 @@ export type Produto = {
 };
 
 type InputItem = {
+  nome: string;
   preco: string;
   gramas: string;
 };
@@ -17,6 +18,11 @@ type Receita = {
   nome: string;
   descricao: string;
   data_criacao: string;
+};
+
+type ReceitaSelecionada = {
+  id: number;
+  nome: string;
 };
 
 type FormStore = {
@@ -35,7 +41,13 @@ type FormStore = {
   setTotalCusto: (valor: number) => void;
   addInput: () => void;
   removeInput: (idx: number) => void;
-  setInput: (idx: number, field: "preco" | "gramas", value: string) => void;
+  setInput: (
+    idx: number,
+    field: "nome" | "preco" | "gramas",
+    value: string
+  ) => void;
+  setInputs: (inputs: { preco: string; gramas: string }[]) => void;
+  setSelectedProducts: (ids: number[]) => void;
   setSelectedProduct: (
     idx: number,
     produtoId: number,
@@ -50,18 +62,28 @@ type FormStore = {
   removeProduto: (id: number) => void;
   receitas: Receita[];
   setReceitas: (receitas: Receita[]) => void;
+  receitaSelecionada: Receita | null;
+  setReceitaSelecionada: (receita: Receita | null) => void;
+  produtosDaReceita: Produto[];
+  setProdutosDaReceita: (produtos: Produto[]) => void;
 };
 
 const useFormStore = create<FormStore>((set) => ({
   produtos: [],
   produtoSelecionado: null,
-  inputs: [{ preco: "", gramas: "" }],
+  inputs: [{ preco: "", gramas: "", nome: "" }],
   selectedProducts: [null],
   custos: [0],
   totalCusto: 0,
   lucroDesejado: 0,
   unidades: 0,
   precoEmbalagem: 0,
+  setInputs: (inputs) =>
+    set((state) => ({
+      inputs,
+      custos: Array(inputs.length).fill(0),
+    })),
+  setSelectedProducts: (ids) => set({ selectedProducts: ids }),
   setPrecoEmbalagem: (valor: number) => set({ totalCusto: valor }),
   setUnidades: (valor: number) => set({ totalCusto: valor }),
   setLucroDesejado: (valor: number) => set({ totalCusto: valor }),
@@ -115,7 +137,11 @@ const useFormStore = create<FormStore>((set) => ({
       custos: state.custos.map((c, i) => (i === idx ? custo : c)),
     })),
   receitas: [],
+  receitaSelecionada: null,
   setReceitas: (receitas) => set({ receitas }),
+  setReceitaSelecionada: (receita) => set({ receitaSelecionada: receita }),
+  produtosDaReceita: [],
+  setProdutosDaReceita: (produtos) => set({ produtosDaReceita: produtos }),
   resetAll: () =>
     set({
       inputs: [{ preco: "", gramas: "" }],

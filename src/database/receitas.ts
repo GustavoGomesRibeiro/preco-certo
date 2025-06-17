@@ -74,3 +74,7 @@ export const listarTodasReceitas = async () => {
   useFormStore.getState().setReceitas(receitas);
   return receitas;
 };
+
+export const removerReceita = async (id: number) => {
+  await db.runAsync(`DELETE FROM receitas WHERE id = ?`, [id]);
+};

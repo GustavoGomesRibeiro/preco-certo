@@ -34,8 +34,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
-    height: 220,
-    margin: 12,
+    height: 100,
   },
   actionButton: {
     width: 80,

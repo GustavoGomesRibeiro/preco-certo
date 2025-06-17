@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { FC } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
-import { Card, Image } from "tamagui";
+import { Card } from "tamagui";
 import SwipeableActions from "../swipeable";
 
 type ProdutosProps = {
@@ -24,7 +24,7 @@ const Produtos: FC<ProdutosProps> = ({
 
   const handleEditar = () => {
     useFormStore.getState().setProdutoSelecionado(produto);
-    router.navigate("/(stack)/formulario-base");
+    router.push("/(stack)/formulario-base");
   };
 
   const renderActions = () => (
@@ -40,10 +40,6 @@ const Produtos: FC<ProdutosProps> = ({
   return (
     <Swipeable renderRightActions={renderActions}>
       <Card style={styles.card}>
-        <Image
-          source={{ uri: require("@/src/assets/images/mercado.jpg") }}
-          style={styles.image}
-        />
         <View style={styles.info}>
           <Text style={styles.nome}>{produto.nome}</Text>
           <View style={styles.row}>
@@ -65,14 +61,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    marginHorizontal: 20,
+    marginBottom: 16,
     borderRadius: 16,
-    margin: 12,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 4,
-    width: 350,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
+    flexDirection: "column",
+    gap: 4,
+    height: 100,
+    width: 300,
+    display: "flex",
+    justifyContent: "center",
+    // alignItems: "center",
   },
   image: {
     width: "100%",

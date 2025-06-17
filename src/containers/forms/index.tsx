@@ -12,7 +12,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Button, Text } from "tamagui";
+import { Button, Label, Text } from "tamagui";
 import { Select } from "../select";
 import useFormStore from "./store/form-store";
 type FormValues = {
@@ -93,7 +93,7 @@ export const Forms = () => {
           label="Nome da Receita"
           fieldName="nomeReceita"
           control={control}
-          placeholder="Ex: Pizza Marguerita"
+          placeholder="Ex: Bolo de Morango"
           rules={{
             required: {
               value: true,
@@ -102,23 +102,32 @@ export const Forms = () => {
           }}
         />
       ) : (
-        <Controller
-          control={control}
-          name="receitaId"
-          rules={{ required: true }}
-          render={({ field: { onChange, value } }) => (
-            <Select
-              value={value?.toString() ?? ""}
-              onValueChange={(val) => onChange(Number(val))}
-              placeholder="Selecione uma receita"
-              label="Receitas disponíveis"
-              items={receitas.map((r) => ({
-                label: r.nome,
-                value: r.id.toString(),
-              }))}
-            />
-          )}
-        />
+        <View style={{ marginBottom: 20 }}>
+          <Label
+            style={{ fontFamily: "Roboto" }}
+            fontWeight="bold"
+            fontSize={16}
+          >
+            Selecione uma receita
+          </Label>
+          <Controller
+            control={control}
+            name="receitaId"
+            rules={{ required: true }}
+            render={({ field: { onChange, value } }) => (
+              <Select
+                value={value?.toString() ?? ""}
+                onValueChange={(val) => onChange(Number(val))}
+                placeholder="Selecione uma receita"
+                label="Receitas disponíveis"
+                items={receitas.map((r) => ({
+                  label: r.nome,
+                  value: r.id.toString(),
+                }))}
+              />
+            )}
+          />
+        </View>
       )}
 
       <TouchableOpacity onPress={() => setIsNovaReceita((prev) => !prev)}>
@@ -185,10 +194,10 @@ export const Forms = () => {
 
       <View style={styles.containerBotaoLista}>
         <TouchableOpacity
-          onPress={() => router.navigate("/(stack)/lista-produtos-base")}
+          onPress={() => router.navigate("/(stack)/lista-receitas")}
         >
           <Text fontWeight={"bold"} fontSize={16}>
-            Ver produtos cadastrados
+            Ver Receitas Cadastradas
           </Text>
         </TouchableOpacity>
       </View>

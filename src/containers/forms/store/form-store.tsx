@@ -80,7 +80,11 @@ const useFormStore = create<FormStore>((set) => ({
   precoEmbalagem: 0,
   setInputs: (inputs) =>
     set((state) => ({
-      inputs,
+      inputs: inputs.map((input) => ({
+        preco: input.preco,
+        gramas: input.gramas,
+        nome: (input as any).nome ?? "",
+      })),
       custos: Array(inputs.length).fill(0),
     })),
   setSelectedProducts: (ids) => set({ selectedProducts: ids }),
@@ -99,7 +103,7 @@ const useFormStore = create<FormStore>((set) => ({
   removeAllProdutos: () => set({ produtos: [] }),
   addInput: () =>
     set((state) => ({
-      inputs: [...state.inputs, { preco: "", gramas: "" }],
+      inputs: [...state.inputs, { preco: "", gramas: "", nome: "" }],
       selectedProducts: [...state.selectedProducts, null],
       custos: [...state.custos, 0],
     })),
@@ -127,6 +131,7 @@ const useFormStore = create<FormStore>((set) => ({
             ? {
                 preco: produto.preco.toString(),
                 gramas: produto.gramas.toString(),
+                nome: produto.nome,
               }
             : item
         ),
@@ -143,11 +148,11 @@ const useFormStore = create<FormStore>((set) => ({
   produtosDaReceita: [],
   setProdutosDaReceita: (produtos) => set({ produtosDaReceita: produtos }),
   resetAll: () =>
-    set({
-      inputs: [{ preco: "", gramas: "" }],
+    set(() => ({
+      inputs: [{ preco: "", gramas: "", nome: "" }],
       selectedProducts: [null],
       custos: [0],
-    }),
+    })),
 }));
 
 export default useFormStore;

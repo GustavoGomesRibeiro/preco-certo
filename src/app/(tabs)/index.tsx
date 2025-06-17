@@ -16,18 +16,6 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
 
-      {/* <View style={styles.containerButton}>
-        <TouchableOpacity
-          onPress={() => router.navigate("/(stack)/lista-produtos-base")}
-        >
-          <Card
-            tipo="produto"
-            titulo="Produtos Cadastrados"
-            descricao="Produtos base cadastrados"
-          />
-        </TouchableOpacity>
-      </View> */}
-
       <View style={styles.containerButton}>
         <TouchableOpacity
           onPress={() => router.navigate("/(stack)/lista-receitas")}

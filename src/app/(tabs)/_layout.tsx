@@ -3,7 +3,7 @@ import TabBarBackground from "@/src/components/ui/TabBarBackground";
 import { Colors } from "@/src/constants/Colors";
 import { useColorScheme } from "@/src/hooks/useColorScheme";
 import { Tabs } from "expo-router";
-import { Calculator, ChartLine, CirclePlus } from "lucide-react-native";
+import { Calculator, CirclePlus } from "lucide-react-native";
 import React from "react";
 import { Platform } from "react-native";
 
@@ -44,7 +44,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="lucro"
         options={{
           title: "Lucro",
@@ -52,7 +52,7 @@ export default function TabLayout() {
             <ChartLine size={size} color={color} />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }

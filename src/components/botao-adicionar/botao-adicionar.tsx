@@ -18,7 +18,6 @@ export const BotaoAdicionar = () => {
         elevation={5}
         onPress={() => {
           router.navigate("/(stack)/formulario-base");
-          // fetchAlimentos("abacaxi");
         }}
       />
     </View>

@@ -6,11 +6,9 @@ import {
 } from "@/src/shared/utils/format-currency";
 import { Image } from "expo-image";
 import { Trash2 } from "lucide-react-native";
-import { useEffect, useRef, useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
-  Animated as AnimatedRC,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -35,19 +33,14 @@ type FormValues = {
   [key: `quantidadeProduto_${number}`]: string | number | undefined;
 };
 export const FormCalculadora = () => {
-  const [paddingBottom] = useState(95);
   const [activeTab, setActiveTab] = useState("Ingredientes");
 
   const {
-    produtos,
     inputs,
-    produtosDaReceita,
-    selectedProducts,
     custos,
     addInput,
     removeInput,
     setInput,
-    setSelectedProduct,
     setCusto,
     setTotalCusto,
     receitas,
@@ -57,7 +50,7 @@ export const FormCalculadora = () => {
     setSelectedProducts,
     setInputs,
   } = useFormStore();
-  const { control, handleSubmit, setValue } = useForm<FormValues>({
+  const { control, setValue } = useForm<FormValues>({
     defaultValues: {
       precoProduto: undefined,
       quantidadeProduto_0: "",
@@ -93,33 +86,6 @@ export const FormCalculadora = () => {
     const custo = preco && gramas && valor ? (preco / gramas) * valor : 0;
     setCusto(idx, custo);
   };
-
-  const onSubmit: SubmitHandler<FormValues> = () => {
-    handleAddInput();
-  };
-
-  const animatedPadding = useRef(new AnimatedRC.Value(95)).current;
-
-  useEffect(() => {
-    const showSub = Keyboard.addListener("keyboardDidShow", () => {
-      AnimatedRC.timing(animatedPadding, {
-        toValue: 45,
-        duration: 250,
-        useNativeDriver: false,
-      }).start();
-    });
-    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
-      AnimatedRC.timing(animatedPadding, {
-        toValue: 95,
-        duration: 250,
-        useNativeDriver: false,
-      }).start();
-    });
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, [animatedPadding]);
 
   useEffect(() => {
     const total = custos.reduce((acc, curr) => acc + (Number(curr) || 0), 0);

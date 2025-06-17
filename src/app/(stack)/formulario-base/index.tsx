@@ -5,7 +5,10 @@ import { router } from "expo-router";
 const FormularioBase = () => {
   return (
     <ContainerWrapper>
-      <BackButton navigate={() => router.back()} title="Cadastro de Produtos" />
+      <BackButton
+        navigate={() => router.replace("/(tabs)")}
+        title="Cadastro de Produtos"
+      />
       <Forms />
     </ContainerWrapper>
   );

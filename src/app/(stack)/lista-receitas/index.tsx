@@ -34,7 +34,10 @@ const ListaReceitas = () => {
 
   return (
     <ContainerWrapper>
-      <BackButton title="Receitas Cadastradas" navigate={() => router.back()} />
+      <BackButton
+        title="Receitas Cadastradas"
+        navigate={() => router.replace("/(tabs)")}
+      />
 
       {receitas.map((receita) => (
         <Swipeable
@@ -42,7 +45,7 @@ const ListaReceitas = () => {
           renderRightActions={() => (
             <SwipeableActions
               onEditar={() =>
-                router.navigate({
+                router.push({
                   pathname: "/(stack)/receita/[id]",
                   params: { id: receita.id.toString() },
                 })
@@ -54,7 +57,7 @@ const ListaReceitas = () => {
           <TouchableOpacity
             style={styles.recipeCard}
             onPress={() =>
-              router.navigate({
+              router.push({
                 pathname: "/(stack)/receita/[id]",
                 params: { id: receita.id.toString() },
               })

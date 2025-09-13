@@ -8,7 +8,7 @@ import Animated, {
 
 import { ThemedView } from "@/src/components/ThemedView";
 import { useBottomTabOverflow } from "@/src/components/ui/TabBarBackground";
-import { useColorScheme } from "@/src/hooks/useColorScheme";
+import { useColorScheme } from "nativewind";
 
 const HEADER_HEIGHT = 250;
 
@@ -24,7 +24,7 @@ export default function ParallaxScrollView({
   headerBackgroundColor,
   scrollViewRef,
 }: Props) {
-  const colorScheme = useColorScheme() ?? "light";
+  const { colorScheme } = useColorScheme() ?? "light";
   // Use o ref externo para animação e scroll
   const scrollOffset = useScrollViewOffset(scrollViewRef);
   const bottom = useBottomTabOverflow();

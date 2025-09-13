@@ -4,7 +4,13 @@ import { logTabelasCriadas } from "../database/log-tabelas";
 
 export function useDataBase() {
   useEffect(() => {
-    initDatabase();
-    logTabelasCriadas();
+    (async () => {
+      try {
+        await initDatabase();
+        await logTabelasCriadas();
+      } catch (error) {
+        console.error("Erro ao criar tabelas:", error);
+      }
+    })();
   }, []);
 }

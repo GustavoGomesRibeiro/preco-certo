@@ -1,4 +1,7 @@
-import useFormStore, { Produto } from "@/src/containers/forms/store/form-store";
+import {
+  Produto,
+  useFormStore,
+} from "@/src/app/(stack)/formulario-base/store/form-store";
 import { removerProduto } from "@/src/database/produtos";
 import { router } from "expo-router";
 import { FC } from "react";

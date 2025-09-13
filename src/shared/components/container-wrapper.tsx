@@ -1,5 +1,5 @@
-import { Colors } from "@/src/constants/Colors";
-import { useColorScheme } from "@/src/hooks/useColorScheme";
+import { TokenColors } from "@/src/shared/constants/token-colors";
+import { useColorScheme } from "nativewind";
 import { RefObject } from "react";
 import {
   KeyboardAvoidingView,
@@ -19,7 +19,7 @@ export const ContainerWrapper: React.FC<ContainerWrapperProps> = ({
   children,
   scrollViewRef,
 }) => {
-  const theme = useColorScheme() ?? "light";
+  const { colorScheme } = useColorScheme() ?? "light";
 
   return (
     <KeyboardAvoidingView
@@ -31,9 +31,9 @@ export const ContainerWrapper: React.FC<ContainerWrapperProps> = ({
           styles.container,
           {
             backgroundColor:
-              theme === "light"
-                ? Colors.light.background
-                : Colors.dark.background,
+              colorScheme === "light"
+                ? TokenColors.light.background
+                : TokenColors.dark.background,
           },
         ]}
       >

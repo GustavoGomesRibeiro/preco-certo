@@ -1,6 +1,6 @@
+import { useFormStore } from "@/src/app/(stack)/formulario-base/store/form-store";
 import BackButton from "@/src/components/back-button";
 import Produtos from "@/src/components/produtos";
-import useFormStore from "@/src/containers/forms/store/form-store";
 import { listarProdutos } from "@/src/database/produtos";
 import { ContainerWrapper } from "@/src/shared/components";
 import { router } from "expo-router";

@@ -17,12 +17,12 @@ import {
 } from "react-native";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 
+import { useFormStore } from "@/src/app/(stack)/formulario-base/store/form-store";
 import { ThemedText } from "@/src/components/ThemedText";
 import { ThemedView } from "@/src/components/ThemedView";
 import { listarReceitasComIngredientes } from "@/src/database/receitas";
 import { Button, Input, Label, Text } from "tamagui";
 import { FormResultados } from "../form-resultados";
-import useFormStore from "../forms/store/form-store";
 
 const tabs = ["Ingredientes", "Resultados"];
 

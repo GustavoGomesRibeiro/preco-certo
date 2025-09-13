@@ -1,5 +1,5 @@
+import "@/src/assets/global/global.css";
 import { useDataBase } from "@/src/hooks/use-data-base";
-import { useColorScheme } from "@/src/hooks/useColorScheme";
 import {
   DarkTheme,
   DefaultTheme,
@@ -9,13 +9,14 @@ import { defaultConfig } from "@tamagui/config/v4";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "nativewind";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { createTamagui, TamaguiProvider } from "tamagui";
 
 const config = createTamagui(defaultConfig);
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   useDataBase();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),

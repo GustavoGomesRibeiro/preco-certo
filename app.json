@@ -16,7 +16,8 @@
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.gustavogomesribeiro.precocerto"
     },
     "web": {
       "bundler": "metro",
@@ -35,10 +36,17 @@
         }
       ],
       "expo-sqlite",
-      "expo-barcode-scanner"
+      "expo-web-browser",
+      "react-native-edge-to-edge"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b4c2bb03-828d-4f1f-b343-d20c11d1fc94"
+      }
     }
   }
 }

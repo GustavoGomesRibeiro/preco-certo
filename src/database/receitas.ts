@@ -1,5 +1,5 @@
+import { useFormStore } from "@/src/app/(stack)/formulario-base/store/form-store";
 import * as SQLite from "expo-sqlite";
-import useFormStore from "../containers/forms/store/form-store";
 
 const db = SQLite.openDatabaseSync("meuBanco.db");
 

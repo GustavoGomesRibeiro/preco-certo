@@ -1,7 +1,7 @@
 import BackButton from "@/src/components/back-button";
-import { Forms } from "@/src/containers";
 import { ContainerWrapper } from "@/src/shared/components";
 import { router } from "expo-router";
+import { Forms } from "./containers/forms";
 const FormularioBase = () => {
   return (
     <ContainerWrapper>

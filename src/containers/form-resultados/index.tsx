@@ -1,3 +1,4 @@
+import { useFormStore } from "@/src/app/(stack)/formulario-base/store/form-store";
 import GastosSvg from "@/src/assets/svgs/bill.svg";
 import Gastos02Svg from "@/src/assets/svgs/budget.svg";
 import CaixaSvg from "@/src/assets/svgs/pricing.svg";
@@ -8,7 +9,6 @@ import masks from "@/src/shared/utils/masks";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, Text, View } from "react-native";
 import { Input, Label, Separator, Text as TextTamagui } from "tamagui";
-import useFormStore from "../forms/store/form-store";
 
 type FormResultadosProps = {
   totalCustoIngredientes: number;

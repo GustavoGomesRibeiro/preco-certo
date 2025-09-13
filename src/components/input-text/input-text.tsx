@@ -1,3 +1,4 @@
+import { ConditionalRender } from "@/src/components/conditional-render/conditional-render";
 import masks from "@/src/shared/utils/masks";
 import {
   Control,
@@ -16,7 +17,7 @@ import { Input, Label, Text } from "tamagui";
 
 type InputTextProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   formatarToBRL?: boolean;
   label?: string;
@@ -34,7 +35,7 @@ type InputTextProps<
 
 export const InputText = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   placeholder,
   fieldName,
@@ -43,8 +44,8 @@ export const InputText = <
   type,
   formatarToBRL,
   rules,
-  width = 300,
-  minWidth = 300,
+  width,
+  minWidth,
 }: InputTextProps<TFieldValues, TName>) => {
   return (
     <Controller
@@ -53,14 +54,17 @@ export const InputText = <
       rules={rules}
       render={({ field: { onChange, value }, fieldState }) => (
         <View style={{ flex: 1 }}>
-          <Label
-            style={{ fontFamily: "Roboto" }}
-            htmlFor={label}
-            fontWeight="bold"
-            fontSize={16}
-          >
-            {label}
-          </Label>
+          <ConditionalRender conditional={Boolean(label)}>
+            <Label
+              style={{ fontFamily: "Roboto" }}
+              htmlFor={label}
+              fontWeight="bold"
+              fontSize={16}
+            >
+              {label}
+            </Label>
+          </ConditionalRender>
+
           <Input
             borderColor="grey"
             backgroundColor="#f6f6fa"

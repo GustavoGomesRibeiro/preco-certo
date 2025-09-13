@@ -1,19 +1,19 @@
 import { HapticTab } from "@/src/components/HapticTab";
 import TabBarBackground from "@/src/components/ui/TabBarBackground";
-import { Colors } from "@/src/constants/Colors";
-import { useColorScheme } from "@/src/hooks/useColorScheme";
+import { TokenColors } from "@/src/shared/constants/token-colors";
 import { Tabs } from "expo-router";
 import { Calculator, CirclePlus } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import React from "react";
 import { Platform } from "react-native";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: TokenColors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
